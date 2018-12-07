@@ -1,0 +1,731 @@
+#include <UTFT.h> 
+#include <URTouch.h>
+
+using namespace std;
+
+UTFT lcd(CTE32_R2,38,39,40,41);
+
+URTouch touch( 6, 5, 4, 3, 2);
+
+extern uint8_t SmallFont[];
+extern uint8_t BigFont[];
+
+int page;
+int x; 
+int y;
+
+//set pin values for each solenoid
+int whiskey = 4;
+int vodka = 5;
+int rum = 6;
+int peach = 7;
+int tequila = 8;
+int coke = 9;
+int sprite = 10;
+int sour = 11;
+
+//set liquor and fill count
+float count = 3000; //3 s
+float fill = 10500; //10.5 s
+
+//double drink or strong drink held as an integer value
+int d_s = 0;
+
+class button
+{
+  public:
+
+    void draw(int x,int  y,int x1,int y1)
+    {
+      lcd.setColor(255,0,0);
+      lcd.fillRoundRect(x, y, x1, y1);
+      lcd.setColor(255, 255, 255);
+      lcd.drawRoundRect(x, y, x1, y1); 
+      lcd.setBackColor(255, 0, 0);
+    }
+    
+};
+
+class drink
+{
+  public:
+
+    void one_each(int alc, int chase)
+    {
+      digitalWrite(alc, HIGH);
+      digitalWrite(chase, HIGH);
+      delay(count);
+      digitalWrite(alc, LOW);
+      delay(fill-count);
+      digitalWrite(chase, LOW);
+    }
+    
+    void two_alc(int alc, int alc2, int chase)
+    {
+      digitalWrite(alc, HIGH);
+      digitalWrite(alc2, HIGH);
+      digitalWrite(chase, HIGH);
+      delay(count/2.0);
+      digitalWrite(alc, LOW);
+      digitalWrite(alc2, LOW);
+      delay(fill-count);
+      digitalWrite(chase, LOW);
+    }
+
+    void shot(int alc)
+    {
+      digitalWrite(alc, HIGH);
+      delay(3000);
+      digitalWrite(alc, LOW);
+    }
+};
+
+drink peach_sprite;
+//peach_sprite.alc = peach;
+//peach_sprite.chase = sprite;
+drink rum_coke;
+//rum_coke.alc = rum;
+//rum_coke.chase = coke;
+drink rum_sprite;
+//rum_sprite.alc = rum;
+//rum_sprite.chase = sprite;
+drink tequila_sprite;
+//tequila_sprite.alc = tequila;
+//tequila_sprite.chase = sprite;
+drink tequila_shot;
+//tequila_shot.alc = tequila;
+drink vodka_sprite;
+//vodka_sprite.alc = vodka;
+//vodka_sprite.chase = sprite;
+drink vodka_sour;
+//vodka_sour.alc = vodka;
+//vodka_sour.chase = sour;
+drink whiskey_coke;
+//whiskey_coke.alc = whiskey;
+//whiskey_coke.chase =  coke;
+drink whiskey_sprite;
+//whiskey_sprite.alc = whiskey;
+//whiskey_sprite.chase = sprite;
+drink whiskey_sour;
+//whiskey_sour.alc = whiskey;
+//whiskey_sour.chase = sour;
+drink footjob;
+//footjob.alc = whiskey;
+//footjob.alc2 = peach;
+//footjob.chase = sour;
+
+void setup()
+{
+  lcd.InitLCD();
+  lcd.clrScr();
+  touch.InitTouch();
+  touch.setPrecision(PREC_LOW);
+
+  pinMode(whiskey, OUTPUT);
+  pinMode(vodka, OUTPUT);
+  pinMode(rum, OUTPUT);
+  pinMode(peach, OUTPUT);
+  pinMode(tequila, OUTPUT);
+  pinMode(coke, OUTPUT);
+  pinMode(sprite, OUTPUT);
+  pinMode(sour, OUTPUT);
+
+  homescreen();
+  page = 0;
+}
+
+
+void loop()
+{
+  if (page == 0)
+  {
+    if (touch.dataAvailable())
+    {
+      delay(50);
+      touch.read();
+      delay(50);
+      x = touch.getX();
+      y = touch.getY();
+
+      if ((x>=30) && (x<=155) && (y>=30) && (y<=75))
+      {
+        page = 1;
+        lcd.clrScr();
+        peach_page();
+      }
+      else if ((x>=30) && (x<=155) && (y>=85) && (y<=130))
+      {
+        page = 2;
+        lcd.clrScr();
+        rum_page();
+      }
+      else if ((x>=35) && (x<=155) && (y>=140) && (y<=170))
+      {
+        page = 3;
+        lcd.clrScr();
+        tequila_page();
+      }
+      else if ((x>=170) && (x<=290) && (y>=30) && (y<=75))
+      {
+        page = 4;
+        lcd.clrScr();
+        vodka_page();
+      }
+      else if ((x>=170) && (x<=290) && (y>=85) && (y<=130))
+      {
+        page = 5;
+        lcd.clrScr();
+        whiskey_page();
+      }
+    }
+  }
+//=========================
+//peach
+//=========================
+  if (page == 1)
+  {
+    if (touch.dataAvailable());
+    {
+      delay(50);
+      touch.read();
+      delay(50);
+      x = touch.getX();
+      y = touch.getY();
+
+      if ((x>=15) && (x<=305) && (y>=30) && (y<=60))
+      {
+        peach_sprite.one_each(peach, sprite);
+      }
+      else if ((x>=265) && (x<=305) && (y>=200) && (y<=230))
+      {
+        x2();
+      }
+      else if ((x>=220) && (x<=260) && (y>=200) && (y<=230))
+      {
+        strong();
+      }
+//home
+      else if ((x>=15) && (x<=100) && (y>=200) && (y<=230))
+      {
+        page = 0;
+        lcd.clrScr();
+        homescreen();
+      }
+    }
+  }
+//=========================
+//rum
+//=========================
+  if (page == 2)
+  {
+    if (touch.dataAvailable())
+    {
+      delay(50);
+      touch.read();
+      delay(50);
+      x = touch.getX();
+      y = touch.getY();
+
+      if ((x>=15) && (x<=305) && (y>=30) && (y<=60))
+      {
+        rum_coke.one_each(rum, coke);
+      }
+      else if ((x>=15) && (x<=305) && (y>=65) && (y<=95))
+      {
+        rum_sprite.one_each(rum, sprite);
+      }
+      else if ((x>=265) && (x<=305) && (y>=200) && (y<=230))
+      {
+        x2();
+      }
+      else if ((x>=220) && (x<=260) && (y>=200) && (y<=230))
+      {
+        strong();
+      }
+      else if ((x>=15) && (x<=100) && (y>=200) && (y<=230))
+      {
+        page = 0;
+        lcd.clrScr();
+        homescreen();
+      }
+    }
+  }
+//=========================
+//tequila
+//=========================
+  if (page == 3)
+  {
+    if (touch.dataAvailable())
+    {
+      delay(50);
+      touch.read();
+      delay(50);
+      x = touch.getX();
+      y = touch.getY();
+
+      if ((x>=15) && (x<=305) && (y>=30) && (y<=60))
+      {
+        tequila_sprite.one_each(tequila, sprite);
+      }
+      if ((x>=15) && (x<=305) && (y>=65) && (y<=95))
+      {
+        tequila_shot.shot(tequila);
+      }
+      if ((x>=265) && (x<=305) && (y>=200) && (y<=230))
+      {
+        x2();
+      }
+      if ((x>=220) && (x<=260) && (y>=200) && (y<=230))
+      {
+        strong();
+      }
+      if ((x>=15) && (x<=100) && (y>=200) && (y<=230))
+      {
+        page = 0;
+        lcd.clrScr();
+        homescreen();
+      }
+    }
+  }
+//=========================
+//vodka
+//=========================
+  if (page == 4)
+  {
+    if (touch.dataAvailable())
+    {
+      delay(50);
+      touch.read();
+      delay(50);
+      x = touch.getX();
+      y = touch.getY();
+
+      if ((x>=15) && (x<=305) && (y>=30) && (y<=60))
+      {
+        vodka_sprite.one_each(vodka, sprite);
+      }
+      else if ((x>=15) && (x<=305) && (y>=65) && (y<=95))
+      {
+        vodka_sour.one_each(vodka, sour);
+      }
+      if ((x>=265) && (x<=305) && (y>=200) && (y<=230))
+      {
+        x2();
+      }
+      else if ((x>=220) && (x<=260) && (y>=200) && (y<=230))
+      {
+        strong(); 
+      }
+      else if ((x>=15) && (x<=100) && (y>=200) && (y<=230))
+      {
+        page = 0;
+        lcd.clrScr();
+        homescreen();
+      }
+    }
+  }
+//=========================
+//whiskey
+//=========================
+  if (page == 5)
+  {
+    if (touch.dataAvailable())
+    {
+      delay(50);
+      touch.read();
+      delay(50);
+      x = touch.getX();
+      y = touch.getY();
+
+      if ((x>=15) && (x<=305) && (y>=30) && (y<=60))
+      {
+        whiskey_coke.one_each(whiskey, coke);
+      }
+      else if ((x>=15) && (x<=305) && (y>=65) && (y<=95))
+      {
+        whiskey_sprite.one_each(whiskey, sprite);
+      }
+      else if ((x>=15) && (x<=305) && (y>=100) && (y<=130))
+      {
+        whiskey_sour.one_each(whiskey, sour);
+      }
+      else if ((x>=15) && (x<=305) && (y>=135) && (y<=165))
+      {
+        footjob.two_alc(whiskey, peach, sour);
+      }
+      else if ((x>=265) && (x<=305) && (y>=200) && (y<=230))
+      {
+        x2();
+      }
+      else if ((x>=220) && (x<=260) && (y>=200) && (y<=230))
+      {
+        strong();
+      }
+      else if ((x>=15) && (x<=100) && (y>=200) && (y<=230))
+      {
+        lcd.clrScr();
+        homescreen();
+        page = 0;
+      }
+    }
+  }
+
+}
+
+//double drink button activiation
+void x2()
+{
+  if (d_s == 0 || d_s == 2)
+  {
+    //fill 2x button blue
+    lcd.setColor(0, 0, 255);
+    lcd.fillRoundRect(265, 200, 305, 230);
+    lcd.setColor(255, 255, 255);
+    lcd.drawRoundRect(265, 200, 305, 230);
+    lcd.setBackColor(0, 0, 255);
+    lcd.print(String("2x"), 270, 205);
+    //fill strong button red
+    lcd.setColor(255, 0, 0);
+    lcd.fillRoundRect(220, 200, 260, 230);
+    lcd.setColor(255, 255, 255);
+    lcd.drawRoundRect(220, 200, 260, 230);
+    lcd.setBackColor(255, 0, 0);
+    lcd.print(String("St"), 225, 205);
+    count = 6000; //s
+    fill = 16500; //s
+    d_s = 1;
+  }
+  else
+  {
+    d_s = 0;
+    //fill 2x button blue
+    lcd.setColor(255, 0, 0);
+    lcd.fillRoundRect(265, 200, 305, 230);
+    lcd.setColor(255, 255, 255);
+    lcd.drawRoundRect(265, 200, 305, 230);
+    lcd.setBackColor(255, 0, 0);
+    lcd.print(String("2x"), 270, 205);
+    count = 3000; //s
+    fill = 10500; //s
+  }
+}
+
+//strong drink button activation
+void strong()
+{
+  if (d_s == 0 || d_s == 1)
+  {
+    lcd.setColor(0, 0, 255);
+    lcd.fillRoundRect(220, 200, 260, 230);
+    lcd.setColor(255, 255, 255);
+    lcd.drawRoundRect(220, 200, 260, 230);
+    lcd.setBackColor(0, 0, 255);
+    lcd.print(String("St"), 225, 205);
+    lcd.setColor(255, 0, 0);
+    lcd.fillRoundRect(265, 200, 305, 230);
+    lcd.setColor(255, 255, 255);
+    lcd.drawRoundRect(265, 200, 305, 230);
+    lcd.setBackColor(255, 0, 0);
+    lcd.print(String("2x"), 270, 205);
+    count = 6000; //s
+    fill = 6000; //s
+    d_s = 2;
+  }
+  else
+  {
+    d_s = 0;
+    lcd.setColor(255, 0, 0);
+    lcd.fillRoundRect(220, 200, 260, 230);
+    lcd.setColor(255, 255, 255);
+    lcd.drawRoundRect(220, 200, 260, 230);
+    lcd.setBackColor(255, 0, 0);
+    lcd.print(String("St"), 225, 205);
+    count = 3000; //s
+    fill = 10500; //s
+  }
+}
+
+button double_button;
+button strong_button;
+void double_strong()
+{
+  //2x button
+  double_button.draw(265, 200, 305, 230);
+  lcd.print(String("2x"), 270, 205);
+
+//strong button
+  strong_button.draw(220, 200, 260, 230);
+  lcd.print(String("St"), 225, 205);
+}
+
+button home_button;
+void go_home()
+{
+  home_button.draw(15, 200, 100, 230);
+  lcd.print(String("Home"), 20, 205);
+}
+
+void homescreen()
+{
+  lcd.setBackColor(0,0,0);
+  lcd.setColor(255, 255, 255);
+  lcd.setFont(BigFont);
+  lcd.print(String("Barduino"), CENTER, 5);
+
+//peach button
+  button peach;
+  peach.draw(35, 30, 155, 75);
+  lcd.print(String("Peach"), 40, 38);
+
+//rum button
+  button rum;
+  rum.draw(35, 85, 155, 130);
+  lcd.print(String("Rum"), 40, 93);
+
+//tequila button
+  button tequila;
+  tequila.draw(35, 140, 155, 185);
+  lcd.print(String("Tequila"), 40, 148);
+
+//vodka button
+  button vodka;
+  vodka.draw(170, 30, 290, 75);
+  lcd.print(String("Vodka"), 175, 38);
+
+//whiskey button
+  button whiskey;
+  whiskey.draw(170, 85, 290, 130);
+  lcd.print(String("Whiskey"), 175, 93);
+
+  d_s = 0;
+
+}
+
+button peach_sprite_button;
+void peach_page()
+{
+  lcd.setBackColor(0,0,0);
+  lcd.setColor(255, 255, 255);
+  lcd.setFont(BigFont);
+  lcd.print(String("Peach Drinks"), CENTER, 5);
+
+//peach and sprite button
+  peach_sprite_button.draw(15, 30, 305, 60);
+  lcd.print(String("Peach and Sprite"), 20, 38);
+
+  double_strong();
+  go_home();
+}
+
+button rum_coke_button;
+button rum_sprite_button;
+void rum_page()
+{
+  lcd.setBackColor(0,0,0);
+  lcd.setColor(255, 255, 255);
+  lcd.setFont(BigFont);
+  lcd.print(String("Rum Drinks"), CENTER, 5);
+
+//rum and coke button
+  rum_coke_button.draw(15, 30, 305, 60);
+  lcd.print(String("Rum and Coke"), 20, 38);
+
+//rum and sprite button
+  rum_sprite_button.draw(15, 65, 305, 95);
+  lcd.print(String("Rum and Sprite"), 20, 73);
+
+  double_strong();
+  go_home();
+}
+
+button tequila_sprite_button;
+button tequila_shot_button;
+void tequila_page()
+{
+  lcd.setBackColor(0,0,0);
+  lcd.setColor(255, 255, 255);
+  lcd.setFont(BigFont);
+  lcd.print(String("Tequila Drinks"), CENTER, 5);
+
+//tequila and sprite button
+  tequila_sprite_button.draw(15, 30, 305, 60);
+  lcd.print(String("Tequila and Sprite"), 20, 38);
+
+//tequila shot button
+  tequila_shot_button.draw(15, 65, 305, 95);
+  lcd.print(String("Tequila Shot"), 20, 73);
+
+  double_strong();
+  go_home();
+}
+
+button vodka_sprite_button;
+button vodka_sour_button;
+void vodka_page()
+{
+  lcd.setBackColor(0,0,0);
+  lcd.setColor(255, 255, 255);
+  lcd.setFont(BigFont);
+  lcd.print(String("Vodka Drinks"), CENTER, 5);
+
+//vodka and sprite button
+  vodka_sprite_button.draw(15, 30, 305, 60);
+  lcd.print(String("Vodka and Sprite"), 20, 38);
+
+//vodka and sour button
+  vodka_sour_button.draw(15, 65, 305, 95);
+  lcd.print(String("Vodka and Sour"), 20, 73);
+
+  double_strong();
+  go_home();
+}
+button whiskey_coke_button;
+button whiskey_sprite_button;
+button footjob_button;
+button whiskey_sour_button;
+void whiskey_page()
+{
+  lcd.setBackColor(0,0,0);
+  lcd.setColor(255, 255, 255);
+  lcd.setFont(BigFont);
+  lcd.print(String("Whiskey Drinks"), CENTER, 5);
+
+//whiskey and coke button
+  whiskey_coke_button.draw(15, 30, 305, 60);
+  lcd.print(String("Whiskey and Coke"), 20, 38);
+
+//whiskey and sprite button
+  whiskey_sprite_button.draw(15, 65, 305, 95); 
+  lcd.print(String("Whiskey and Sprite"), 20, 73);
+  
+//whiskey and sour button
+  whiskey_sour_button.draw(15, 100, 305, 130);
+  lcd.print(String("Whiskey and Sour"), 20, 108);
+  
+//footjob button
+  footjob_button.draw(15, 135, 305, 165);
+  lcd.print(String("Footjob"), 20, 143);
+  
+  double_strong();
+  go_home();
+}
+
+//Everything below this line is old stuff I just haven't deleted yet===================
+
+//drinks
+//whiskey
+
+/*
+void whiskey_coke()
+{
+  digitalWrite(whiskey, HIGH);
+  digitalWrite(coke, HIGH);
+  delay(count);
+  digitalWrite(whiskey, LOW);
+  delay(fill-count);
+  digitalWrite(coke, LOW);
+}
+
+void whiskey_sprite()
+{
+  digitalWrite(whiskey, HIGH);
+  digitalWrite(sprite, HIGH);
+  delay(count);
+  digitalWrite(whiskey, LOW);
+  delay(fill-count);
+  digitalWrite(sprite, LOW);
+}
+
+void whiskey_sour()
+{
+  digitalWrite(whiskey, HIGH);
+  digitalWrite(sour, HIGH);
+  delay(count);
+  digitalWrite(whiskey, LOW);
+  delay(fill-count); 
+  digitalWrite(sour, LOW);
+}
+
+void footjob()
+{
+  digitalWrite(whiskey, HIGH);
+  digitalWrite(peach, HIGH);
+  digitalWrite(sour, HIGH);
+  delay(count/2.0);
+  digitalWrite(whiskey, LOW);
+  digitalWrite(peach, LOW);
+  delay(fill-count);
+  digitalWrite(sour, LOW);
+}
+
+//vodka
+void vodka_sprite()
+{
+  digitalWrite(vodka, HIGH);
+  digitalWrite(sprite, HIGH);
+  delay(count);
+  digitalWrite(vodka, LOW);
+  delay(fill-count);
+  digitalWrite(sprite, LOW);
+}
+
+void vodka_sour()
+{
+  digitalWrite(vodka, HIGH);
+  digitalWrite(sour, HIGH);
+  delay(count);
+  digitalWrite(vodka, LOW);
+  delay(fill-count);
+  digitalWrite(sour, LOW);
+}
+
+//rum
+void rum_coke()
+{
+  digitalWrite(rum, HIGH);
+  digitalWrite(coke, HIGH);
+  delay(count);
+  digitalWrite(rum, LOW);
+  delay(fill-count);
+  digitalWrite(coke, LOW);
+}
+
+void rum_sprite()
+{
+  digitalWrite(rum, HIGH);
+  digitalWrite(sprite, HIGH);
+  delay(count);
+  digitalWrite(rum, LOW);
+  delay(fill-count);
+  digitalWrite(sprite, LOW);
+}
+
+//peach
+void peach_sprite()
+{
+  digitalWrite(peach, HIGH);
+  digitalWrite(sprite, HIGH);
+  delay(count);
+  digitalWrite(peach, LOW);
+  delay(fill-count);
+  digitalWrite(sprite, LOW);
+}
+
+//tequila
+void tequila_sprite()
+{
+  digitalWrite(tequila, HIGH);
+  digitalWrite(sprite, HIGH);
+  delay(count);
+  digitalWrite(tequila, LOW);
+  delay(fill-count);
+  digitalWrite(sprite, LOW);
+}
+
+void tequila_shot()
+{
+  digitalWrite(tequila, HIGH);
+  delay(3000);
+  digitalWrite(tequila, LOW);
+}
+*/
