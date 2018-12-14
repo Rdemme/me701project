@@ -15,14 +15,14 @@ int x;
 int y;
 
 //set pin values for each solenoid
-int whiskey = 4;
-int vodka = 5;
-int rum = 6;
-int peach = 7;
-int tequila = 8;
-int coke = 9;
-int sprite = 10;
-int sour = 11;
+int whiskey = 8;
+int vodka = 9;
+int rum = 10;
+int peach =11;
+int tequila = 12;
+int coke = 13;
+int sprite = 6;
+int sour = 7;
 
 //set liquor and fill count
 float count = 3000; //3 s
@@ -81,45 +81,23 @@ class drink
 };
 
 drink peach_sprite;
-//peach_sprite.alc = peach;
-//peach_sprite.chase = sprite;
 drink rum_coke;
-//rum_coke.alc = rum;
-//rum_coke.chase = coke;
 drink rum_sprite;
-//rum_sprite.alc = rum;
-//rum_sprite.chase = sprite;
 drink tequila_sprite;
-//tequila_sprite.alc = tequila;
-//tequila_sprite.chase = sprite;
 drink tequila_shot;
-//tequila_shot.alc = tequila;
 drink vodka_sprite;
-//vodka_sprite.alc = vodka;
-//vodka_sprite.chase = sprite;
 drink vodka_sour;
-//vodka_sour.alc = vodka;
-//vodka_sour.chase = sour;
 drink whiskey_coke;
-//whiskey_coke.alc = whiskey;
-//whiskey_coke.chase =  coke;
 drink whiskey_sprite;
-//whiskey_sprite.alc = whiskey;
-//whiskey_sprite.chase = sprite;
 drink whiskey_sour;
-//whiskey_sour.alc = whiskey;
-//whiskey_sour.chase = sour;
 drink footjob;
-//footjob.alc = whiskey;
-//footjob.alc2 = peach;
-//footjob.chase = sour;
 
 void setup()
 {
   lcd.InitLCD();
   lcd.clrScr();
   touch.InitTouch();
-  touch.setPrecision(PREC_LOW);
+  touch.setPrecision(PREC_MEDIUM);
 
   pinMode(whiskey, OUTPUT);
   pinMode(vodka, OUTPUT);
@@ -176,6 +154,12 @@ void loop()
         page = 5;
         lcd.clrScr();
         whiskey_page();
+      }
+      else if ((x>=170) && (x<=290) && (y>=140) && (y<=185))
+      {
+        page = 6;
+        lcd.clrScr();
+        custom_page();
       }
     }
   }
@@ -369,7 +353,71 @@ void loop()
       }
     }
   }
+  if (page == 6)
+  {
+    while (touch.dataAvailable() == true)
+    {
+      touch.read();
+      x = touch.getX();
+      y = touch.getY();
 
+      if ((x>=15) && (x<=155) && (y>=30) && (y<=60))
+      {
+        digitalWrite(peach, HIGH);
+      }
+      else if ((x>=15) && (x<=155) && (y>=65) && (y<=95))
+      {
+        digitalWrite(rum, HIGH);
+      }
+      else if ((x>=15) && (x<=155) && (y>=100) && (y<=130))
+      {
+        digitalWrite(tequila, HIGH);
+      }
+      else if ((x>=15) && (x<=155) && (y>=135) && (y<=165))
+      {
+        digitalWrite(vodka, HIGH);
+      }
+      else if ((x>=170) && (x<=305) && (y>=30) && (y<=60))
+      {
+        digitalWrite(whiskey, HIGH);
+      }
+      else if ((x>=170) && (x<=305) && (y>=65) && (y<=95))
+      {
+        digitalWrite(coke, HIGH);
+      }
+      else if ((x>=170) && (x<=305) && (y>=100) && (y<=130))
+      {
+        digitalWrite(sprite, HIGH);
+      }
+      else if ((x>=170) && (x<=305) && (y>=135) && (y<=165))
+      {
+        digitalWrite(sour, HIGH);
+      }
+      else if ((x>=265) && (x<=305) && (y>=200) && (y<=230))
+      {
+        x2();
+      }
+      else if ((x>=220) && (x<=260) && (y>=200) && (y<=230))
+      {
+        strong();
+      }
+      else if ((x>=15) && (x<=100) && (y>=200) && (y<=230))
+      {
+        lcd.clrScr();
+        homescreen();
+        page = 0;
+      }
+    }
+    digitalWrite(peach, LOW);
+    digitalWrite(rum, LOW);
+    digitalWrite(tequila, LOW);
+    digitalWrite(vodka, LOW);
+    digitalWrite(whiskey, LOW);
+    digitalWrite(coke, LOW);
+    digitalWrite(sprite, LOW);
+    digitalWrite(sour, LOW);
+    
+  }
 }
 
 //double drink button activiation
@@ -445,6 +493,9 @@ void strong()
   }
 }
 
+//drinks
+//whiskey
+
 button double_button;
 button strong_button;
 void double_strong()
@@ -496,6 +547,11 @@ void homescreen()
   button whiskey;
   whiskey.draw(170, 85, 290, 130);
   lcd.print(String("Whiskey"), 175, 93);
+
+//custom button
+  button custom;
+  custom.draw(170, 140, 290, 185);
+  lcd.print(String("Custom"), 175, 148);
 
   d_s = 0;
 
@@ -610,122 +666,56 @@ void whiskey_page()
   go_home();
 }
 
-//Everything below this line is old stuff I just haven't deleted yet===================
+//=============
+//Custom Page
+//=============
 
-//drinks
-//whiskey
-
-/*
-void whiskey_coke()
+button whiskey_c;
+button vodka_c;
+button rum_c;
+button peach_c;
+button tequila_c;
+button coke_c;
+button sprite_c;
+button sour_c;
+void custom_page()
 {
-  digitalWrite(whiskey, HIGH);
-  digitalWrite(coke, HIGH);
-  delay(count);
-  digitalWrite(whiskey, LOW);
-  delay(fill-count);
-  digitalWrite(coke, LOW);
-}
+  lcd.setBackColor(0,0,0);
+  lcd.setColor(255, 255, 255);
+  lcd.setFont(BigFont);
+  lcd.print(String("Custom Menu"), CENTER, 5);
 
-void whiskey_sprite()
-{
-  digitalWrite(whiskey, HIGH);
-  digitalWrite(sprite, HIGH);
-  delay(count);
-  digitalWrite(whiskey, LOW);
-  delay(fill-count);
-  digitalWrite(sprite, LOW);
-}
+//peach button
+  peach_c.draw(15, 30, 155, 60);
+  lcd.print(String("Peach"), 20, 38);
 
-void whiskey_sour()
-{
-  digitalWrite(whiskey, HIGH);
-  digitalWrite(sour, HIGH);
-  delay(count);
-  digitalWrite(whiskey, LOW);
-  delay(fill-count); 
-  digitalWrite(sour, LOW);
-}
+//rum button
+  rum_c.draw(15, 65, 155, 95); 
+  lcd.print(String("Rum"), 20, 73);
+  
+//tequila button
+  tequila_c.draw(15, 100, 155, 130);
+  lcd.print(String("Tequila"), 20, 108);
+  
+//vodka button
+  vodka_c.draw(15, 135, 155, 165);
+  lcd.print(String("Vodka"), 20, 143);
 
-void footjob()
-{
-  digitalWrite(whiskey, HIGH);
-  digitalWrite(peach, HIGH);
-  digitalWrite(sour, HIGH);
-  delay(count/2.0);
-  digitalWrite(whiskey, LOW);
-  digitalWrite(peach, LOW);
-  delay(fill-count);
-  digitalWrite(sour, LOW);
-}
+//whiskey button
+  whiskey_c.draw(170, 30, 305, 60);
+  lcd.print(String("Whiskey"), 175, 38);
 
-//vodka
-void vodka_sprite()
-{
-  digitalWrite(vodka, HIGH);
-  digitalWrite(sprite, HIGH);
-  delay(count);
-  digitalWrite(vodka, LOW);
-  delay(fill-count);
-  digitalWrite(sprite, LOW);
+//coke button
+  coke_c.draw(170, 65, 305, 95); 
+  lcd.print(String("Coke"), 175, 73);
+  
+//sprite button
+  sprite_c.draw(170, 100, 305, 130);
+  lcd.print(String("Sprite"), 175, 108);
+  
+//sour button
+  sour_c.draw(170, 135, 305, 165);
+  lcd.print(String("Sour"), 175, 143);
+  
+  go_home();
 }
-
-void vodka_sour()
-{
-  digitalWrite(vodka, HIGH);
-  digitalWrite(sour, HIGH);
-  delay(count);
-  digitalWrite(vodka, LOW);
-  delay(fill-count);
-  digitalWrite(sour, LOW);
-}
-
-//rum
-void rum_coke()
-{
-  digitalWrite(rum, HIGH);
-  digitalWrite(coke, HIGH);
-  delay(count);
-  digitalWrite(rum, LOW);
-  delay(fill-count);
-  digitalWrite(coke, LOW);
-}
-
-void rum_sprite()
-{
-  digitalWrite(rum, HIGH);
-  digitalWrite(sprite, HIGH);
-  delay(count);
-  digitalWrite(rum, LOW);
-  delay(fill-count);
-  digitalWrite(sprite, LOW);
-}
-
-//peach
-void peach_sprite()
-{
-  digitalWrite(peach, HIGH);
-  digitalWrite(sprite, HIGH);
-  delay(count);
-  digitalWrite(peach, LOW);
-  delay(fill-count);
-  digitalWrite(sprite, LOW);
-}
-
-//tequila
-void tequila_sprite()
-{
-  digitalWrite(tequila, HIGH);
-  digitalWrite(sprite, HIGH);
-  delay(count);
-  digitalWrite(tequila, LOW);
-  delay(fill-count);
-  digitalWrite(sprite, LOW);
-}
-
-void tequila_shot()
-{
-  digitalWrite(tequila, HIGH);
-  delay(3000);
-  digitalWrite(tequila, LOW);
-}
-*/
